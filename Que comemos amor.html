@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¿Qué Comemos hoy mi amor? ❤️</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 28rem;
+            width: 100%;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+            background: linear-gradient(to right, #34d399 0%, #22d3ee 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .dice-button {
+            width: 10rem;
+            height: 10rem;
+            border-radius: 1.5rem;
+            background: linear-gradient(135deg, #34d399 0%, #22d3ee 100%);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 16px rgba(34, 211, 238, 0.2);
+            font-size: 5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dice-button::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent,
+                rgba(255, 255, 255, 0.1),
+                transparent
+            );
+            transform: rotate(45deg);
+            transition: 0.5s;
+        }
+
+        .dice-button:hover {
+            transform: scale(1.05) rotate(5deg);
+            box-shadow: 0 12px 24px rgba(34, 211, 238, 0.3);
+        }
+
+        .dice-button:hover::after {
+            left: 100%;
+        }
+
+        .dice-button:active {
+            transform: scale(0.95);
+        }
+
+        .dice-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .dice-button.rolling {
+            animation: roll 0.8s infinite;
+        }
+
+        @keyframes roll {
+            0% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(-15deg) scale(1.1); }
+            50% { transform: rotate(0deg) scale(1); }
+            75% { transform: rotate(15deg) scale(1.1); }
+            100% { transform: rotate(0deg) scale(1); }
+        }
+
+        .result {
+            margin-top: 3rem;
+            padding: 2rem;
+            border-radius: 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .result.rolling {
+            transform: scale(0.95);
+            opacity: 0.5;
+        }
+
+        .emoji {
+            font-size: 6rem;
+            margin-bottom: 1.5rem;
+            animation: bounce 1.5s infinite;
+            display: inline-block;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.1); }
+        }
+
+        .meal-name {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #34d399;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Qué Comemos hoy mi amor? ❤️</h1>
+        
+        <button id="diceButton" class="dice-button">
+            🎲
+        </button>
+
+        <div id="result" class="result hidden">
+            <div id="mealEmoji" class="emoji"></div>
+            <div id="mealName" class="meal-name"></div>
+        </div>
+    </div>
+
+    <script>
+        const meals = [
+            { name: 'Pasta', emoji: '🍝' },
+            { name: 'Pescado', emoji: '🐟' },
+            { name: 'Ternera', emoji: '🥩' },
+            { name: 'Pollo', emoji: '🍗' },
+            { name: 'Pizza', emoji: '🍕' },
+            { name: 'Burritos', emoji: '🌯' },
+            { name: 'Hamburguesa', emoji: '🍔' },
+            { name: 'Perritos', emoji: '🌭' },
+            { name: 'Arroz a la cubana', emoji: '🍳' },
+            { name: 'Arroz con chipirones', emoji: '🦑' },
+            { name: 'Quinoa', emoji: '🥗' }
+        ];
+
+        const diceButton = document.getElementById('diceButton');
+        const result = document.getElementById('result');
+        const mealEmoji = document.getElementById('mealEmoji');
+        const mealName = document.getElementById('mealName');
+        let isRolling = false;
+
+        diceButton.addEventListener('click', () => {
+            if (isRolling) return;
+            
+            isRolling = true;
+            diceButton.classList.add('rolling');
+            result.classList.add('rolling');
+            result.classList.remove('hidden');
+            
+            let iterations = 0;
+            const maxIterations = 20;
+            const interval = setInterval(() => {
+                const randomMeal = meals[Math.floor(Math.random() * meals.length)];
+                mealEmoji.textContent = randomMeal.emoji;
+                mealName.textContent = randomMeal.name;
+                iterations++;
+                
+                if (iterations >= maxIterations) {
+                    clearInterval(interval);
+                    isRolling = false;
+                    diceButton.classList.remove('rolling');
+                    result.classList.remove('rolling');
+                }
+            }, 100);
+        });
+    </script>
+</body>
+</html>
